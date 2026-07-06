@@ -3,14 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>תכנון ערב מחלקה - ראשון לציון והסביבה</title>
+    <title>סיעור מוחות: גיבוש אלכוהולי למחלקה</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@200;400;700&display=swap");
       body {
         font-family: "Assistant", sans-serif;
         background-color: #fdfbf7;
@@ -18,10 +15,10 @@
       .chart-container {
         position: relative;
         width: 100%;
-        max-width: 700px;
+        max-width: 600px;
         margin-left: auto;
         margin-right: auto;
-        height: 350px;
+        height: 300px;
         max-height: 400px;
       }
       .card-transition {
@@ -29,318 +26,377 @@
       }
       .card-transition:hover {
         transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       }
-      .gradient-bg {
-        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      }
-      .selected-mode {
-        border: 4px solid #6366f1;
-        background-color: #eef2ff;
+      .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
       }
     </style>
   </head>
-  <body class="p-4 md:p-8">
-    <div class="max-w-6xl mx-auto">
-      <!-- Header -->
-      <header class="text-center mb-10">
-        <h1 class="text-4-xl md:text-5xl font-bold text-gray-800 mb-4">
-          ערב מחלקה בלתי נשכח
-        </h1>
-        <p class="text-lg text-gray-600">
-          המדריך המלא ל-11 משתתפים ברדיוס של עד 50 ק"מ מראשון לציון
-        </p>
-      </header>
+  <body class="text-gray-800">
+    <!-- Chosen Palette: Vintage Vineyard (Cream, Deep Wine, Warm Oak) -->
 
-      <!-- Configuration Section -->
-      <section
-        class="bg-white rounded-2xl p-6 shadow-sm mb-10 border border-gray-100"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          <div>
-            <h2 class="text-2xl font-bold text-gray-700 mb-4">הגדרות בסיס</h2>
-            <p class="text-gray-600 mb-6">
-              התקציב הכולל שלנו הוא
-              <span class="font-bold text-indigo-600">5,500 ₪</span>. בחר את רמת
-              האלכוהול המתוכננת כדי לראות איך זה משפיע על התקציב הפנוי לפעילות.
-            </p>
+    <!-- Application Structure Plan: 
+         1. Hero Section: הקדמה וסקירת התקציב (5500 ש"ח).
+         2. Interactive Controls: כפתור החלפה למצב "עם הסעה" (מעדכן תקציב פעילות ל-3500 ש"ח).
+         3. Discovery Grid: 10 כרטיסיות אינטראקטיביות עם רעיונות מקוריים.
+         4. Analytics Dashboard: גרפים המשווים בין עוצמת אלכוהול, רמת גיבוש ועלות.
+         5. Dynamic Calculator: מחשבון עלות לכל משתתף בזמן אמת.
+         הבחירה במבנה זה נועדה לאפשר למנהל/ת המחלקה להבין את הטרייד-אוף בין איכות האלכוהול לצורך בלוגיסטיקה. -->
 
-            <div class="flex flex-col gap-4">
-              <button
-                id="btn-no-transport"
-                onclick="updateBudget(false)"
-                class="flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200"
-              >
-                <div class="flex items-center">
-                  <span class="text-3xl ml-4">🚗</span>
-                  <div class="text-right">
-                    <span class="block font-bold">אלכוהול סביר (ללא הסעה)</span>
-                    <span class="text-sm text-gray-500"
-                      >תקציב לבילוי: 500 ₪ לאדם</span
-                    >
-                  </div>
-                </div>
-                <span class="font-bold text-green-600">5,500 ₪ זמין</span>
-              </button>
+    <!-- Visualization & Content Choices: 
+         - Bar Chart: להשוואה בין 10 האופציות לפי פרמטרים.
+         - Polar Area Chart: להמחשת "אווירת האירוע".
+         - Interactive Cards: כל רעיון מוצג עם "תג מחיר" משתנה.
+         - NO SVG/Mermaid: שימוש ב-Canvas וב-Tailwind בלבד. -->
 
-              <button
-                id="btn-transport"
-                onclick="updateBudget(true)"
-                class="flex items-center justify-between p-4 border rounded-xl card-transition"
-              >
-                <div class="flex items-center">
-                  <span class="text-3xl ml-4">🚌</span>
-                  <div class="text-right">
-                    <span class="block font-bold"
-                      >משתכרים בכיף (כולל הסעה)</span
-                    >
-                    <span class="text-sm text-gray-500"
-                      >תקציב לבילוי: ~318 ₪ לאדם</span
-                    >
-                  </div>
-                </div>
-                <span class="font-bold text-orange-600">3,500 ₪ זמין</span>
-              </button>
-            </div>
-          </div>
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
-          <div class="bg-gray-50 rounded-xl p-6 text-center">
-            <div class="text-sm text-gray-500 uppercase tracking-wide mb-2">
-              יתרה מחושבת לבילוי
-            </div>
-            <div
-              id="remaining-budget"
-              class="text-6xl font-black text-indigo-600"
-            >
-              5,500 ₪
-            </div>
-            <div class="mt-4 text-gray-500 italic">
-              "התקציב מחושב עבור 11 אנשים"
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Introduction to Recommendations -->
-      <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-2">
-          ההמלצות הנבחרות שלנו
-        </h2>
-        <p class="text-gray-600">
-          ריכזנו עבורכם 4 חוויות שונות באופיין, מבוססות על מרחק נסיעה והתאמה
-          לתקציב.
-        </p>
-      </div>
-
-      <!-- Recommendations Grid -->
-      <div
-        id="options-container"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
-      >
-        <!-- Cards will be injected by JS -->
-      </div>
-
-      <!-- Comparative Analysis Section -->
-      <section
-        class="bg-indigo-900 text-white rounded-3xl p-8 shadow-xl overflow-hidden relative"
-      >
-        <div class="relative z-10">
-          <h2 class="text-3xl font-bold mb-6">
-            ניתוח השוואתי: מה הכי מתאים לכם?
-          </h2>
-          <p class="mb-8 opacity-90 max-w-2xl">
-            השתמשו בתרשים למטה כדי להבין את האיזון בין כמות האלכוהול, איכות
-            האוכל וה"פאן" בכל אחת מהאופציות.
-          </p>
-
-          <div class="chart-container bg-white rounded-2xl p-4">
-            <canvas id="comparisonChart"></canvas>
-          </div>
-        </div>
-        <!-- Decorative circle -->
+    <nav class="p-6 border-b border-orange-100 glass sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-red-900">Department Cheers 🥂</h1>
         <div
-          class="absolute top-0 left-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"
-        ></div>
+          class="text-sm font-medium text-orange-800 bg-orange-100 px-4 py-2 rounded-full"
+        >
+          תקציב כולל: 5,500 ₪ | 11 משתתפים
+        </div>
+      </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6">
+      <!-- Introduction -->
+      <section class="mb-12 text-center">
+        <h2 class="text-4xl font-light mb-4">הגיבוש הבא שלכם מתחיל כאן</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          הכנו עבורכם 10 חוויות ייחודיות ברדיוס של 50 ק"מ מראשל"צ. האם תלכו על
+          "אלכוהול כבד" שדורש הסעה, או חוויה מתוחכמת עם תקציב גבוה יותר לפעילות?
+        </p>
       </section>
 
-      <!-- Footer Footer -->
-      <footer class="mt-16 text-center border-t border-gray-200 pt-8 pb-12">
-        <p class="text-gray-500">
-          הנתונים מבוססים על הערכות מחירים ממוצעות לשנת 2024 באזור גוש דן
-          והשפלה.
+      <!-- Transport Toggle -->
+      <div
+        class="bg-white p-6 rounded-2xl shadow-sm mb-12 border border-orange-50 flex flex-col md:flex-row items-center justify-between gap-6"
+      >
+        <div>
+          <h3 class="text-xl font-bold mb-1">לוגיסטיקה והסעות</h3>
+          <p class="text-gray-500">
+            האם האירוע כולל כמות אלכוהול שמחייבת נהג חיצוני?
+          </p>
+        </div>
+        <div class="flex items-center gap-4">
+          <span class="font-bold text-gray-400" id="label-no-bus"
+            >ללא הסעה (500 ₪ למשתתף)</span
+          >
+          <button
+            onclick="toggleTransport()"
+            id="transport-toggle"
+            class="relative w-16 h-8 bg-gray-200 rounded-full transition-colors duration-300"
+          >
+            <div
+              id="toggle-circle"
+              class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300"
+            ></div>
+          </button>
+          <span class="font-bold text-red-800 opacity-50" id="label-bus"
+            >כולל הסעה (318 ₪ למשתתף)</span
+          >
+        </div>
+      </div>
+
+      <!-- Ideas Grid -->
+      <div
+        id="ideas-container"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+      >
+        <!-- Ideas will be injected here by JS -->
+      </div>
+
+      <!-- Charts Section -->
+      <section
+        class="bg-white p-8 rounded-3xl shadow-lg border border-orange-50 mb-16"
+      >
+        <div class="text-center mb-10">
+          <h2 class="text-3xl font-bold text-red-900">ניתוח השוואתי</h2>
+          <p class="text-gray-600">
+            השוואה בין רמת האלכוהול, רמת הגיבוש והתאמה לתקציב
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <h4 class="text-center font-bold mb-4">מדד החוויה (0-100)</h4>
+            <div class="chart-container">
+              <canvas id="comparisonChart"></canvas>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-center font-bold mb-4">חלוקת תקציב (₪)</h4>
+            <div class="chart-container">
+              <canvas id="budgetChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Call to Action -->
+      <footer class="text-center pb-20">
+        <p class="text-gray-500 mb-4 italic text-sm">
+          כל המחירים הם הערכות המבוססות על מחירי שוק ממוצעים לקבוצות של 11 איש.
         </p>
-        <p class="text-indigo-600 font-semibold mt-2 underline">
-          תהנו בערב המחלקה!
-        </p>
+        <button
+          onclick="window.print()"
+          class="bg-red-900 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-800 transition-colors"
+        >
+          הדפס סיכום למנהל/ת המחלקה
+        </button>
       </footer>
-    </div>
+    </main>
 
     <script>
-      const data = [
+      let includeTransport = false;
+      let myChart = null;
+      let myBudgetChart = null;
+
+      const ideas = [
         {
-          id: 1,
-          name: "סדנת קוקטיילים פרטית וטאפאס",
-          location: "תל אביב (20 ק״מ)",
-          description:
-            "מיקסולוג מגיע לסטודיו מעוצב, מלמד אתכם לשקשק, לשתות המון וליהנות מאוכל גורמה קליל.",
-          vibe: "אנרגטי ומגבש",
-          alcohol: 9,
-          food: 7,
-          teamwork: 10,
-          costPerPerson: 450,
-          transportRecommended: true,
+          title: "המעבדה לזיקוק ג'ין",
+          location: "דרום תל אביב",
+          alcohol: "גבוה מאוד",
+          focus: "יצירתיות",
+          desc: "סדנה פרטית במזקקת בוטיק. כל משתתף מזקק לעצמו בקבוק ג'ין עם תערובת בוטנית אישית. כולל טעימות ג'ין וטוניק ללא הגבלה.",
+          alcoholLevel: 95,
+          teambuilding: 85,
+          transportRequired: true,
+          basePrice: 350,
         },
         {
-          id: 2,
-          name: "יקב 'שורק' - חווית יין וגבינות",
-          location: "עמק טלמון / אזור לטרון (30 ק״מ)",
-          description:
-            "סיור ביקב, טעימות של 5-6 סוגי יין ופלטות גבינות ומושחתות באווירה פסטורלית של חו״ל.",
-          vibe: "רגוע ויוקרתי",
-          alcohol: 7,
-          food: 8,
-          teamwork: 6,
-          costPerPerson: 320,
-          transportRecommended: true,
+          title: "סדנת 'שיכורים מציירים'",
+          location: "יפו",
+          alcohol: "בינוני",
+          focus: "אמנותי",
+          desc: "סטודיו פתוח, מוזיקה מעולה, ויין איכותי שנשפך. מורה לאמנות מוביל אתכם לציור קבוצתי ענק כשהעכבות משתחררות.",
+          alcoholLevel: 60,
+          teambuilding: 90,
+          transportRequired: false,
+          basePrice: 450,
         },
         {
-          id: 3,
-          name: "חדר קריוקי פרטי + פרימיום בר",
-          location: "ראשון לציון (0 ק״מ)",
-          description:
-            "מתחם כמו MEONOT או Plug-In עם חדר פרטי, מערכת סאונד מטורפת, אלכוהול חופשי וארוחת שף.",
-          vibe: "מסיבה מטורפת",
-          alcohol: 8,
-          food: 6,
-          teamwork: 9,
-          costPerPerson: 350,
-          transportRecommended: false,
+          title: "גרפיטי ובירה בפלורנטין",
+          location: "תל אביב",
+          alcohol: "בינוני",
+          focus: "סיור חווייתי",
+          desc: "סיור לילה בעקבות אמנות רחוב שמסתיים בטעימות בירה ב'מבשלת בוטיק'. כל אחד מקבל 'פלייט' של 5 סוגי בירות מקומיות.",
+          alcoholLevel: 55,
+          teambuilding: 75,
+          transportRequired: false,
+          basePrice: 320,
         },
         {
-          id: 4,
-          name: "סיור קולינרי בשוק לוינסקי (ערב)",
-          location: "דרום תל אביב (18 ק״מ)",
-          description:
-            "סיור טעימות עמוק שכולל בירות, ערק, וטעימות מהמטבחים הכי טובים בעיר. מסתיים בבר מקומי.",
-          vibe: "אורבני וסקרן",
-          alcohol: 6,
-          food: 10,
-          teamwork: 7,
-          costPerPerson: 380,
-          transportRecommended: false,
+          title: "קרב המיקסולוגים",
+          location: "ראשון לציון (מערב)",
+          alcohol: "גבוה",
+          focus: "תחרותי",
+          desc: "תחרות הכנת קוקטיילים בקבוצות. ברמן מקצועי מלמד טכניקות, ואז המחלקה מתפצלת לצוותים שצריכים להמציא את קוקטייל המחלקה.",
+          alcoholLevel: 85,
+          teambuilding: 95,
+          transportRequired: true,
+          basePrice: 300,
+        },
+        {
+          title: "סדנת סאקה וסושי",
+          location: "רמת גן / תל אביב",
+          alcohol: "בינוני",
+          focus: "קולינרי",
+          desc: "ערב שמוקדש לתרבות היפנית. טעימות של 4 סוגי סאקה שונים (חם/קר) בשילוב הכנת רולים של סושי ברמה גבוהה.",
+          alcoholLevel: 45,
+          teambuilding: 80,
+          transportRequired: false,
+          basePrice: 480,
+        },
+        {
+          title: "משחקי היין (Blind Tasting)",
+          location: "מושבי גזר (כרמי יוסף)",
+          alcohol: "גבוה",
+          focus: "אינטלקטואלי",
+          desc: "משחק הימורים על יין. טועמים יינות בכיסוי עיניים וצריכים לנחש זן, שנת בציר ומחיר. המנצח זוכה במארז יינות יוקרתי.",
+          alcoholLevel: 75,
+          teambuilding: 88,
+          transportRequired: true,
+          basePrice: 330,
+        },
+        {
+          title: "סדנת וויסקי ושוקולד",
+          location: "רחובות",
+          alcohol: "גבוה",
+          focus: "נהנתנות",
+          desc: "שילוב מפתיע של סוגי וויסקי סינגל מאלט עם פרלינים בעבודת יד. ערב רגוע, איכותי ומאוד מגבש בשיחה חופשית.",
+          alcoholLevel: 80,
+          teambuilding: 70,
+          transportRequired: true,
+          basePrice: 320,
+        },
+        {
+          title: "שיט שקיעה עם קוקטיילים",
+          location: "מרינה הרצליה",
+          alcohol: "נמוך-בינוני",
+          focus: "יוקרה",
+          desc: "שעתיים על יאכטה פרטית גדולה. מוזיקה, בריזה, ובר קוקטיילים פתוח עם נשנושים איכותיים. חוויה של פעם בחיים.",
+          alcoholLevel: 40,
+          teambuilding: 82,
+          transportRequired: false,
+          basePrice: 500,
+        },
+        {
+          title: "פאב קוויז מותאם אישית",
+          location: 'ברים בנס ציונה/ראשל"צ',
+          alcohol: "בינוני-גבוה",
+          focus: "ידע כללי",
+          desc: "סוגרים חדר פרטי בבר. מנחה בונה קוויז שאלות על עובדי המחלקה בשילוב משחקי שתייה (מי שצודק שותה/משקה).",
+          alcoholLevel: 70,
+          teambuilding: 98,
+          transportRequired: true,
+          basePrice: 280,
+        },
+        {
+          title: "פיקניק יין לילי בחוף",
+          location: "חוף פלמחים",
+          alcohol: "בינוני",
+          focus: "פשטות וטבע",
+          desc: "הפקה של 'גלאמפינג' בחוף: מחצלות, פופים, תאורה צבעונית, מלא יין צונן ומגשי גבינות ופירות. הכי מחוץ לקופסה שיש.",
+          alcoholLevel: 50,
+          teambuilding: 92,
+          transportRequired: false,
+          basePrice: 380,
         },
       ];
 
-      let hasTransport = false;
-      let chartInstance = null;
+      function toggleTransport() {
+        includeTransport = !includeTransport;
+        const circle = document.getElementById("toggle-circle");
+        const btn = document.getElementById("transport-toggle");
+        const lNo = document.getElementById("label-no-bus");
+        const lYes = document.getElementById("label-bus");
 
-      function updateBudget(isTransport) {
-        hasTransport = isTransport;
-        const remainingBudget = isTransport ? 3500 : 5500;
-        const budgetElement = document.getElementById("remaining-budget");
-
-        // UI Updates
-        budgetElement.innerText = remainingBudget.toLocaleString() + " ₪";
-
-        document.getElementById("btn-transport").className = isTransport
-          ? "flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500"
-          : "flex items-center justify-between p-4 border rounded-xl card-transition bg-white";
-
-        document.getElementById("btn-no-transport").className = !isTransport
-          ? "flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500"
-          : "flex items-center justify-between p-4 border rounded-xl card-transition bg-white";
-
-        renderOptions();
-        updateChart();
-      }
-
-      function renderOptions() {
-        const container = document.getElementById("options-container");
-        const budgetPerPerson = (hasTransport ? 3500 : 5500) / 11;
-
-        container.innerHTML = data
-          .map((opt) => {
-            const isOverBudget = opt.costPerPerson > budgetPerPerson;
-            return `
-                <div class="bg-white rounded-2xl p-6 border ${isOverBudget ? "border-red-100 bg-gray-50 opacity-80" : "border-gray-100 shadow-sm"} card-transition flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">${opt.vibe}</span>
-                            <span class="text-gray-400 text-sm">${opt.location}</span>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-800 mb-2">${opt.name}</h3>
-                        <p class="text-gray-600 text-sm mb-4 leading-relaxed">${opt.description}</p>
-                    </div>
-                    
-                    <div class="mt-4 pt-4 border-t border-gray-100">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <span class="text-2xl font-black ${isOverBudget ? "text-red-500" : "text-gray-800"}">${opt.costPerPerson} ₪</span>
-                                <span class="text-gray-400 text-xs">לאדם</span>
-                            </div>
-                            ${
-                              isOverBudget
-                                ? '<span class="text-red-500 text-xs font-bold">חורג מהתקציב במצב זה</span>'
-                                : '<span class="text-green-500 text-xs font-bold">מתאים לתקציב ✓</span>'
-                            }
-                        </div>
-                    </div>
-                </div>
-                `;
-          })
-          .join("");
-      }
-
-      function updateChart() {
-        const ctx = document.getElementById("comparisonChart").getContext("2d");
-
-        if (chartInstance) {
-          chartInstance.destroy();
+        if (includeTransport) {
+          circle.style.transform = "translateX(2rem)";
+          btn.classList.replace("bg-gray-200", "bg-red-600");
+          lNo.classList.add("opacity-50");
+          lYes.classList.remove("opacity-50");
+        } else {
+          circle.style.transform = "translateX(0)";
+          btn.classList.replace("bg-red-600", "bg-gray-200");
+          lNo.classList.remove("opacity-50");
+          lYes.classList.add("opacity-50");
         }
+        renderIdeas();
+        updateCharts();
+      }
 
-        chartInstance = new Chart(ctx, {
+      function renderIdeas() {
+        const container = document.getElementById("ideas-container");
+        container.innerHTML = "";
+
+        ideas.forEach((idea, index) => {
+          // Filter logic
+          let isGrayedOut = false;
+          let priceColor = "text-green-600";
+          const currentBudgetPerPerson = includeTransport ? 318 : 500;
+
+          if (idea.basePrice > currentBudgetPerPerson) {
+            isGrayedOut = true;
+            priceColor = "text-red-400";
+          }
+
+          // Auto-suggest transport for high alcohol ideas
+          let warning = "";
+          if (!includeTransport && idea.alcoholLevel > 70) {
+            warning = "⚠️ דורש נהג/הסעה";
+          }
+
+          const card = document.createElement("div");
+          card.className = `bg-white p-6 rounded-2xl border border-gray-100 shadow-sm card-transition ${isGrayedOut ? "opacity-60 grayscale-[0.5]" : ""}`;
+          card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-xs font-bold uppercase tracking-wider text-orange-600 bg-orange-50 px-2 py-1 rounded">${idea.focus}</span>
+                        <span class="font-bold ${priceColor}">${idea.basePrice} ₪</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-900">${idea.title}</h3>
+                    <p class="text-sm text-gray-500 mb-4 h-12 overflow-hidden">${idea.desc}</p>
+                    <div class="flex items-center gap-2 mb-4 text-xs">
+                        <span class="bg-gray-100 px-2 py-1 rounded">📍 ${idea.location}</span>
+                        <span class="bg-red-50 text-red-700 px-2 py-1 rounded">🍷 ${idea.alcohol}</span>
+                    </div>
+                    <div class="pt-4 border-t border-gray-50 flex justify-between items-center">
+                        <span class="text-[10px] text-red-500 font-bold">${warning}</span>
+                        <button class="text-sm font-bold text-red-900 hover:underline">פרטים נוספים ←</button>
+                    </div>
+                `;
+          container.appendChild(card);
+        });
+      }
+
+      function updateCharts() {
+        const ctx = document.getElementById("comparisonChart").getContext("2d");
+        const bCtx = document.getElementById("budgetChart").getContext("2d");
+
+        const activeIdeas = ideas.slice(0, 5); // Show first 5 for clarity
+        const labels = activeIdeas.map((i) => i.title.substring(0, 15));
+        const alcoholData = activeIdeas.map((i) => i.alcoholLevel);
+        const teamData = activeIdeas.map((i) => i.teambuilding);
+
+        if (myChart) myChart.destroy();
+        if (myBudgetChart) myBudgetChart.destroy();
+
+        myChart = new Chart(ctx, {
           type: "bar",
           data: {
-            labels: data.map((d) => d.name.substring(0, 15) + "..."),
+            labels: labels,
             datasets: [
               {
                 label: "רמת אלכוהול",
-                data: data.map((d) => d.alcohol),
-                backgroundColor: "#6366f1",
-                borderRadius: 8,
+                data: alcoholData,
+                backgroundColor: "rgba(153, 27, 27, 0.7)",
               },
               {
-                label: "איכות האוכל",
-                data: data.map((d) => d.food),
-                backgroundColor: "#a855f7",
-                borderRadius: 8,
-              },
-              {
-                label: "גיבוש צוות",
-                data: data.map((d) => d.teamwork),
-                backgroundColor: "#fbbf24",
-                borderRadius: 8,
+                label: "רמת גיבוש",
+                data: teamData,
+                backgroundColor: "rgba(251, 146, 60, 0.7)",
               },
             ],
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: "bottom",
-                labels: { boxWidth: 12, padding: 15 },
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { position: "bottom" } },
+          },
+        });
+
+        const transportCost = includeTransport ? 2000 : 0;
+        const activityCost = 5500 - transportCost;
+
+        myBudgetChart = new Chart(bCtx, {
+          type: "doughnut",
+          data: {
+            labels: ["פעילות", "הסעה", "רזרבה"],
+            datasets: [
+              {
+                data: [activityCost, transportCost, 0],
+                backgroundColor: ["#991b1b", "#fb923c", "#e5e7eb"],
               },
-            },
-            scales: {
-              y: { beginAtZero: true, max: 10, ticks: { stepSize: 2 } },
-            },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: "bottom" } },
           },
         });
       }
 
       // Initialize
-      window.onload = () => updateBudget(false);
+      renderIdeas();
+      updateCharts();
     </script>
   </body>
 </html>
