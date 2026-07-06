@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>תכנון ערב מחלקה - ראשון לציון והסביבה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Assistant", sans-serif;
+        background-color: #fdfbf7;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+      }
+      .card-transition {
+        transition: all 0.3s ease;
+      }
+      .card-transition:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+      }
+      .selected-mode {
+        border: 4px solid #6366f1;
+        background-color: #eef2ff;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+      <!-- Header -->
+      <header class="text-center mb-10">
+        <h1 class="text-4-xl md:text-5xl font-bold text-gray-800 mb-4">
+          ערב מחלקה בלתי נשכח
+        </h1>
+        <p class="text-lg text-gray-600">
+          המדריך המלא ל-11 משתתפים ברדיוס של עד 50 ק"מ מראשון לציון
+        </p>
+      </header>
+
+      <!-- Configuration Section -->
+      <section
+        class="bg-white rounded-2xl p-6 shadow-sm mb-10 border border-gray-100"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">הגדרות בסיס</h2>
+            <p class="text-gray-600 mb-6">
+              התקציב הכולל שלנו הוא
+              <span class="font-bold text-indigo-600">5,500 ₪</span>. בחר את רמת
+              האלכוהול המתוכננת כדי לראות איך זה משפיע על התקציב הפנוי לפעילות.
+            </p>
+
+            <div class="flex flex-col gap-4">
+              <button
+                id="btn-no-transport"
+                onclick="updateBudget(false)"
+                class="flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200"
+              >
+                <div class="flex items-center">
+                  <span class="text-3xl ml-4">🚗</span>
+                  <div class="text-right">
+                    <span class="block font-bold">אלכוהול סביר (ללא הסעה)</span>
+                    <span class="text-sm text-gray-500"
+                      >תקציב לבילוי: 500 ₪ לאדם</span
+                    >
+                  </div>
+                </div>
+                <span class="font-bold text-green-600">5,500 ₪ זמין</span>
+              </button>
+
+              <button
+                id="btn-transport"
+                onclick="updateBudget(true)"
+                class="flex items-center justify-between p-4 border rounded-xl card-transition"
+              >
+                <div class="flex items-center">
+                  <span class="text-3xl ml-4">🚌</span>
+                  <div class="text-right">
+                    <span class="block font-bold"
+                      >משתכרים בכיף (כולל הסעה)</span
+                    >
+                    <span class="text-sm text-gray-500"
+                      >תקציב לבילוי: ~318 ₪ לאדם</span
+                    >
+                  </div>
+                </div>
+                <span class="font-bold text-orange-600">3,500 ₪ זמין</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-6 text-center">
+            <div class="text-sm text-gray-500 uppercase tracking-wide mb-2">
+              יתרה מחושבת לבילוי
+            </div>
+            <div
+              id="remaining-budget"
+              class="text-6xl font-black text-indigo-600"
+            >
+              5,500 ₪
+            </div>
+            <div class="mt-4 text-gray-500 italic">
+              "התקציב מחושב עבור 11 אנשים"
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Introduction to Recommendations -->
+      <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">
+          ההמלצות הנבחרות שלנו
+        </h2>
+        <p class="text-gray-600">
+          ריכזנו עבורכם 4 חוויות שונות באופיין, מבוססות על מרחק נסיעה והתאמה
+          לתקציב.
+        </p>
+      </div>
+
+      <!-- Recommendations Grid -->
+      <div
+        id="options-container"
+        class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
+      >
+        <!-- Cards will be injected by JS -->
+      </div>
+
+      <!-- Comparative Analysis Section -->
+      <section
+        class="bg-indigo-900 text-white rounded-3xl p-8 shadow-xl overflow-hidden relative"
+      >
+        <div class="relative z-10">
+          <h2 class="text-3xl font-bold mb-6">
+            ניתוח השוואתי: מה הכי מתאים לכם?
+          </h2>
+          <p class="mb-8 opacity-90 max-w-2xl">
+            השתמשו בתרשים למטה כדי להבין את האיזון בין כמות האלכוהול, איכות
+            האוכל וה"פאן" בכל אחת מהאופציות.
+          </p>
+
+          <div class="chart-container bg-white rounded-2xl p-4">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+        </div>
+        <!-- Decorative circle -->
+        <div
+          class="absolute top-0 left-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2"
+        ></div>
+      </section>
+
+      <!-- Footer Footer -->
+      <footer class="mt-16 text-center border-t border-gray-200 pt-8 pb-12">
+        <p class="text-gray-500">
+          הנתונים מבוססים על הערכות מחירים ממוצעות לשנת 2024 באזור גוש דן
+          והשפלה.
+        </p>
+        <p class="text-indigo-600 font-semibold mt-2 underline">
+          תהנו בערב המחלקה!
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      const data = [
+        {
+          id: 1,
+          name: "סדנת קוקטיילים פרטית וטאפאס",
+          location: "תל אביב (20 ק״מ)",
+          description:
+            "מיקסולוג מגיע לסטודיו מעוצב, מלמד אתכם לשקשק, לשתות המון וליהנות מאוכל גורמה קליל.",
+          vibe: "אנרגטי ומגבש",
+          alcohol: 9,
+          food: 7,
+          teamwork: 10,
+          costPerPerson: 450,
+          transportRecommended: true,
+        },
+        {
+          id: 2,
+          name: "יקב 'שורק' - חווית יין וגבינות",
+          location: "עמק טלמון / אזור לטרון (30 ק״מ)",
+          description:
+            "סיור ביקב, טעימות של 5-6 סוגי יין ופלטות גבינות ומושחתות באווירה פסטורלית של חו״ל.",
+          vibe: "רגוע ויוקרתי",
+          alcohol: 7,
+          food: 8,
+          teamwork: 6,
+          costPerPerson: 320,
+          transportRecommended: true,
+        },
+        {
+          id: 3,
+          name: "חדר קריוקי פרטי + פרימיום בר",
+          location: "ראשון לציון (0 ק״מ)",
+          description:
+            "מתחם כמו MEONOT או Plug-In עם חדר פרטי, מערכת סאונד מטורפת, אלכוהול חופשי וארוחת שף.",
+          vibe: "מסיבה מטורפת",
+          alcohol: 8,
+          food: 6,
+          teamwork: 9,
+          costPerPerson: 350,
+          transportRecommended: false,
+        },
+        {
+          id: 4,
+          name: "סיור קולינרי בשוק לוינסקי (ערב)",
+          location: "דרום תל אביב (18 ק״מ)",
+          description:
+            "סיור טעימות עמוק שכולל בירות, ערק, וטעימות מהמטבחים הכי טובים בעיר. מסתיים בבר מקומי.",
+          vibe: "אורבני וסקרן",
+          alcohol: 6,
+          food: 10,
+          teamwork: 7,
+          costPerPerson: 380,
+          transportRecommended: false,
+        },
+      ];
+
+      let hasTransport = false;
+      let chartInstance = null;
+
+      function updateBudget(isTransport) {
+        hasTransport = isTransport;
+        const remainingBudget = isTransport ? 3500 : 5500;
+        const budgetElement = document.getElementById("remaining-budget");
+
+        // UI Updates
+        budgetElement.innerText = remainingBudget.toLocaleString() + " ₪";
+
+        document.getElementById("btn-transport").className = isTransport
+          ? "flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500"
+          : "flex items-center justify-between p-4 border rounded-xl card-transition bg-white";
+
+        document.getElementById("btn-no-transport").className = !isTransport
+          ? "flex items-center justify-between p-4 border rounded-xl card-transition bg-indigo-50 border-indigo-200 ring-2 ring-indigo-500"
+          : "flex items-center justify-between p-4 border rounded-xl card-transition bg-white";
+
+        renderOptions();
+        updateChart();
+      }
+
+      function renderOptions() {
+        const container = document.getElementById("options-container");
+        const budgetPerPerson = (hasTransport ? 3500 : 5500) / 11;
+
+        container.innerHTML = data
+          .map((opt) => {
+            const isOverBudget = opt.costPerPerson > budgetPerPerson;
+            return `
+                <div class="bg-white rounded-2xl p-6 border ${isOverBudget ? "border-red-100 bg-gray-50 opacity-80" : "border-gray-100 shadow-sm"} card-transition flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">${opt.vibe}</span>
+                            <span class="text-gray-400 text-sm">${opt.location}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${opt.name}</h3>
+                        <p class="text-gray-600 text-sm mb-4 leading-relaxed">${opt.description}</p>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-100">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-2xl font-black ${isOverBudget ? "text-red-500" : "text-gray-800"}">${opt.costPerPerson} ₪</span>
+                                <span class="text-gray-400 text-xs">לאדם</span>
+                            </div>
+                            ${
+                              isOverBudget
+                                ? '<span class="text-red-500 text-xs font-bold">חורג מהתקציב במצב זה</span>'
+                                : '<span class="text-green-500 text-xs font-bold">מתאים לתקציב ✓</span>'
+                            }
+                        </div>
+                    </div>
+                </div>
+                `;
+          })
+          .join("");
+      }
+
+      function updateChart() {
+        const ctx = document.getElementById("comparisonChart").getContext("2d");
+
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
+
+        chartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.map((d) => d.name.substring(0, 15) + "..."),
+            datasets: [
+              {
+                label: "רמת אלכוהול",
+                data: data.map((d) => d.alcohol),
+                backgroundColor: "#6366f1",
+                borderRadius: 8,
+              },
+              {
+                label: "איכות האוכל",
+                data: data.map((d) => d.food),
+                backgroundColor: "#a855f7",
+                borderRadius: 8,
+              },
+              {
+                label: "גיבוש צוות",
+                data: data.map((d) => d.teamwork),
+                backgroundColor: "#fbbf24",
+                borderRadius: 8,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { boxWidth: 12, padding: 15 },
+              },
+            },
+            scales: {
+              y: { beginAtZero: true, max: 10, ticks: { stepSize: 2 } },
+            },
+          },
+        });
+      }
+
+      // Initialize
+      window.onload = () => updateBudget(false);
+    </script>
+  </body>
+</html>
