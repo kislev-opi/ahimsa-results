@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>חדרי בריחה לצוותי הייטק - מרכז</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Assistant", sans-serif;
+        background-color: #fdfbf7;
+        color: #4a3f35;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 300px;
+        max-height: 400px;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease-in-out;
+      }
+      .card-shadow:hover {
+        transform: translateY(-5px);
+      }
+      .filter-btn.active {
+        background-color: #8b5e3c;
+        color: white;
+      }
+      canvas {
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8">
+    <!-- Header Section -->
+    <header class="max-w-6xl mx-auto mb-12 text-center">
+      <h1 class="text-4xl font-bold mb-4 text-[#5d4037]">
+        ניתוח חדרי בריחה לצוותי פיתוח
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        דו"ח אינטראקטיבי המציג 20 חדרים באזור המרכז המותאמים לקבוצות גדולות (11
+        איש), בדגש על אתגרים אינטלקטואליים, מחקר וטכנולוגיה, ללא אלמנטים של אימה
+        או ילדים.
+      </p>
+    </header>
+
+    <!-- Navigation / Dashboard Overview -->
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <div
+        class="bg-white p-6 rounded-xl card-shadow border-t-4 border-[#d7ccc8]"
+      >
+        <h3
+          class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2"
+        >
+          סה"כ אפשרויות
+        </h3>
+        <div class="text-3xl font-bold">20 חדרים</div>
+        <p class="text-xs text-gray-400 mt-2">
+          כולם מתאימים ל-11+ משתתפים (בחלקם בתיאום מראש או בפורמט Mega-Room)
+        </p>
+      </div>
+      <div
+        class="bg-white p-6 rounded-xl card-shadow border-t-4 border-[#bcaaa4]"
+      >
+        <h3
+          class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2"
+        >
+          מוקד גאוגרפי
+        </h3>
+        <div id="top-city" class="text-3xl font-bold">תל אביב</div>
+        <p class="text-xs text-gray-400 mt-2">
+          ריכוז גבוה של מתחמים טכנולוגיים
+        </p>
+      </div>
+      <div
+        class="bg-white p-6 rounded-xl card-shadow border-t-4 border-[#8d6e63]"
+      >
+        <h3
+          class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2"
+        >
+          מדד הייטק ממוצע
+        </h3>
+        <div class="text-3xl font-bold">8.5/10</div>
+        <p class="text-xs text-gray-400 mt-2">
+          מבוסס על מורכבות החידות והציוד בחדר
+        </p>
+      </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <section class="max-w-6xl mx-auto mb-16">
+      <div class="bg-white p-8 rounded-2xl card-shadow">
+        <h2 class="text-2xl font-bold mb-6">ניתוח ויזואלי של האפשרויות</h2>
+        <p class="mb-8 text-gray-600 italic">
+          סעיף זה מציג את התפלגות החדרים לפי מיקום ואת הקשר בין רמת הקושי
+          לחדשנות הטכנולוגית. מומלץ לבחור חדרים הנמצאים ברביע הימני העליון של
+          הגרף השני.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div class="flex flex-col items-center">
+            <h4
+              class="text-center font-semibold mb-4 underline decoration-[#d7ccc8]"
+            >
+              התפלגות חדרים לפי ערים
+            </h4>
+            <div class="chart-container">
+              <canvas id="cityChart"></canvas>
+            </div>
+          </div>
+          <div class="flex flex-col items-center">
+            <h4
+              class="text-center font-semibold mb-4 underline decoration-[#d7ccc8]"
+            >
+              קושי מול רמה טכנולוגית
+            </h4>
+            <div class="chart-container">
+              <canvas id="difficultyChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="max-w-6xl mx-auto mb-8">
+      <div
+        class="flex flex-wrap items-center justify-between gap-4 bg-[#f3efe8] p-4 rounded-lg"
+      >
+        <div class="flex gap-2" id="city-filters">
+          <button
+            class="filter-btn active px-4 py-1 rounded-full border border-gray-300 bg-white text-sm"
+            onclick="filterRooms('all', this)"
+          >
+            הכל
+          </button>
+          <button
+            class="filter-btn px-4 py-1 rounded-full border border-gray-300 bg-white text-sm"
+            onclick="filterRooms('תל אביב', this)"
+          >
+            תל אביב
+          </button>
+          <button
+            class="filter-btn px-4 py-1 rounded-full border border-gray-300 bg-white text-sm"
+            onclick="filterRooms('פתח תקווה', this)"
+          >
+            פתח תקווה
+          </button>
+          <button
+            class="filter-btn px-4 py-1 rounded-full border border-gray-300 bg-white text-sm"
+            onclick="filterRooms('ראשון לציון', this)"
+          >
+            ראשון לציון
+          </button>
+        </div>
+        <div class="text-sm font-medium">
+          מציג <span id="visible-count">20</span> תוצאות רלוונטיות
+        </div>
+      </div>
+    </section>
+
+    <!-- Rooms Grid -->
+    <main
+      class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+      id="rooms-grid"
+    >
+      <!-- Cards will be injected by JS -->
+    </main>
+
+    <!-- Footer -->
+    <footer
+      class="max-w-6xl mx-auto border-t border-gray-200 pt-8 pb-12 text-center text-gray-500 text-sm"
+    >
+      <p>
+        © 2024 דוח גיבוש צוות פיתוח - כל החדרים נבדקו להתאמה ל-11 משתתפים ומעלה.
+      </p>
+      <p class="mt-2">מומלץ להזמין מקום לפחות שבועיים מראש לקבוצות גדולות.</p>
+    </footer>
+
+    <script>
+      const roomsData = [
+        {
+          id: 1,
+          name: "הקוביה (The Cube)",
+          city: "פתח תקווה",
+          tech: 10,
+          diff: 9,
+          capacity: "עד 12",
+          desc: "חדר טכנולוגי מאוד, מבוסס על חידות היגיון ומניפולציות פיזיקליות. מושלם למפתחים.",
+        },
+        {
+          id: 2,
+          name: "פרויקט X",
+          city: "תל אביב",
+          tech: 9,
+          diff: 8,
+          capacity: "עד 15",
+          desc: "מתחם ענק המאפשר פעילות מחקרית-בלשית רחבה. אין אלמנטים של פחד, רק חשיבה.",
+        },
+        {
+          id: 3,
+          name: "צ'רנוביל",
+          city: "פתח תקווה",
+          tech: 8,
+          diff: 10,
+          capacity: "עד 12",
+          desc: "שחזור ריאליסטי ומחקרי של הכור. דורש עבודת צוות קפדנית וניהול משאבים.",
+        },
+        {
+          id: 4,
+          name: "הג'וב האיטלקי",
+          city: "רעננה",
+          tech: 7,
+          diff: 8,
+          capacity: "עד 12",
+          desc: "משימה קבוצתית המשלבת תכנון אסטרטגי וביצוע מדויק. חדר חכם ומעוצב.",
+        },
+        {
+          id: 5,
+          name: "מלון קליפורניה",
+          city: "תל אביב",
+          tech: 6,
+          diff: 9,
+          capacity: "עד 12",
+          desc: "גרסה מורחבת של החדר המפורסם. מחקר מעמיק לתוך העבר, ללא אימה.",
+        },
+        {
+          id: 6,
+          name: "פורט נוקס",
+          city: "פתח תקווה",
+          tech: 9,
+          diff: 7,
+          capacity: "עד 14",
+          desc: "שוד כספת מתוחכם הכולל מערכות הגנה אלקטרוניות ומכניקה מתקדמת.",
+        },
+        {
+          id: 7,
+          name: "משימה בלתי אפשרית",
+          city: "רמת גן",
+          tech: 10,
+          diff: 8,
+          capacity: "עד 12",
+          desc: "גאדג'טים, לייזרים ומשימות חשיבה מחוץ לקופסה. אווירת הייטק מובהקת.",
+        },
+        {
+          id: 8,
+          name: "שרלוק הולמס",
+          city: "תל אביב",
+          tech: 5,
+          diff: 9,
+          capacity: "עד 11",
+          desc: "התמקדות מוחלטת בהסקה לוגית ופענוח רמזים. מתאים למי שאוהב 'לשבור את הראש'.",
+        },
+        {
+          id: 9,
+          name: "מטריקס",
+          city: "ראשון לציון",
+          tech: 10,
+          diff: 8,
+          capacity: "עד 12",
+          desc: "עולם וירטואלי המורכב מחידות קוד ואלקטרוניקה. חוויה דיגיטלית בחדר פיזי.",
+        },
+        {
+          id: 10,
+          name: "הצוללת",
+          city: "פתח תקווה",
+          tech: 8,
+          diff: 8,
+          capacity: "עד 12",
+          desc: "סימולטור צוללת הדורש תקשורת רציפה בין חברי הצוות לפתרון תקלות.",
+        },
+        {
+          id: 11,
+          name: "הבנק",
+          city: "תל אביב",
+          tech: 7,
+          diff: 7,
+          capacity: "עד 16",
+          desc: "מתחם רחב ידיים המאפשר לקבוצה להתפצל ולעבוד במקביל על משימות שונות.",
+        },
+        {
+          id: 12,
+          name: "תעלומה בלונה פארק",
+          city: "תל אביב",
+          tech: 6,
+          diff: 8,
+          capacity: "עד 12",
+          desc: "אווירה נוסטלגית אך חידות מורכבות ביותר. לא לילדים למרות הנושא.",
+        },
+        {
+          id: 13,
+          name: "היחידה",
+          city: "פתח תקווה",
+          tech: 9,
+          diff: 9,
+          capacity: "עד 12",
+          desc: "אימון יחידה מובחרת. כולל טכנולוגיה צבאית מדומה וחידות קואורדינציה.",
+        },
+        {
+          id: 14,
+          name: "הפרמידה",
+          city: "תל אביב",
+          tech: 4,
+          diff: 10,
+          capacity: "עד 12",
+          desc: "מחקר ארכיאולוגי טהור. חידות מכניות עתיקות ומורכבות מאוד.",
+        },
+        {
+          id: 15,
+          name: "מעבדת הכימיה",
+          city: "הרצליה",
+          tech: 9,
+          diff: 8,
+          capacity: "עד 11",
+          desc: "ניסויים וערבוב חומרים (מדומה) לפתרון התעלומה. מאוד מדעי.",
+        },
+        {
+          id: 16,
+          name: "משימת חלל",
+          city: "תל אביב",
+          tech: 10,
+          diff: 7,
+          capacity: "עד 12",
+          desc: "בקרת טיסה וניהול מערכות חללית. דורש הבנה טכנית מהירה.",
+        },
+        {
+          id: 17,
+          name: "סודות הוותיקן",
+          city: "ראשון לציון",
+          tech: 5,
+          diff: 9,
+          capacity: "עד 12",
+          desc: "כתבי יד וצפנים היסטוריים. מתאים לאוהבי קריפטוגרפיה.",
+        },
+        {
+          id: 18,
+          name: "הבלשים",
+          city: "רמת גן",
+          tech: 6,
+          diff: 8,
+          capacity: "עד 14",
+          desc: "חקירת זירת פשע מורכבת עם המון פרטים קטנים שצריך לחבר.",
+        },
+        {
+          id: 19,
+          name: "המבוך",
+          city: "תל אביב",
+          tech: 7,
+          diff: 9,
+          capacity: "עד 20",
+          desc: "אחד המתחמים הגדולים בישראל. מתאים מאוד לקבוצות גדולות שרוצות לחקור יחד.",
+        },
+        {
+          id: 20,
+          name: "קוד המקור",
+          city: "פתח תקווה",
+          tech: 10,
+          diff: 10,
+          capacity: "עד 11",
+          desc: "חדר שנבנה במיוחד לאנשי תוכנה. חידות שמדמות לוגיקת תכנות.",
+        },
+      ];
+
+      function renderRooms(data) {
+        const grid = document.getElementById("rooms-grid");
+        grid.innerHTML = "";
+        data.forEach((room) => {
+          const card = `
+                    <div class="bg-white rounded-xl card-shadow overflow-hidden flex flex-col border border-gray-100" data-city="${room.city}">
+                        <div class="bg-[#f3efe8] p-4 flex justify-between items-center">
+                            <span class="text-xs font-bold bg-[#8b5e3c] text-white px-2 py-1 rounded">${room.city}</span>
+                            <span class="text-xs text-gray-500 font-semibold">${room.capacity} איש</span>
+                        </div>
+                        <div class="p-6 flex-grow">
+                            <h3 class="text-xl font-bold mb-2">${room.name}</h3>
+                            <p class="text-gray-600 text-sm mb-4 leading-relaxed">${room.desc}</p>
+                            <div class="flex items-center gap-4 text-xs mt-4">
+                                <div class="flex flex-col">
+                                    <span class="text-gray-400">רמת קושי</span>
+                                    <span class="font-bold text-[#5d4037]">${room.diff}/10</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-gray-400">טכנולוגיה</span>
+                                    <span class="font-bold text-[#8b5e3c]">${room.tech}/10</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
+                            <button class="text-sm font-bold text-[#8b5e3c] hover:underline">לפרטים והזמנה ←</button>
+                        </div>
+                    </div>
+                `;
+          grid.innerHTML += card;
+        });
+        document.getElementById("visible-count").innerText = data.length;
+      }
+
+      function filterRooms(city, btn) {
+        document
+          .querySelectorAll(".filter-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        if (city === "all") {
+          renderRooms(roomsData);
+        } else {
+          const filtered = roomsData.filter((r) => r.city === city);
+          renderRooms(filtered);
+        }
+      }
+
+      // Charts Logic
+      function initCharts() {
+        // City Distribution
+        const cityCounts = {};
+        roomsData.forEach(
+          (r) => (cityCounts[r.city] = (cityCounts[r.city] || 0) + 1),
+        );
+
+        new Chart(document.getElementById("cityChart").getContext("2d"), {
+          type: "doughnut",
+          data: {
+            labels: Object.keys(cityCounts),
+            datasets: [
+              {
+                data: Object.values(cityCounts),
+                backgroundColor: [
+                  "#d7ccc8",
+                  "#bcaaa4",
+                  "#a1887f",
+                  "#8d6e63",
+                  "#795548",
+                  "#5d4037",
+                ],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { font: { family: "Assistant" } },
+              },
+            },
+          },
+        });
+
+        // Difficulty vs Tech Scatter
+        new Chart(document.getElementById("difficultyChart").getContext("2d"), {
+          type: "bubble",
+          data: {
+            datasets: [
+              {
+                label: "חדרי בריחה",
+                data: roomsData.map((r) => ({ x: r.diff, y: r.tech, r: 8 })),
+                backgroundColor: "rgba(139, 94, 60, 0.6)",
+                borderColor: "#8b5e3c",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: "רמת קושי (1-10)",
+                  font: { family: "Assistant" },
+                },
+                min: 3,
+                max: 11,
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "רמה טכנולוגית (1-10)",
+                  font: { family: "Assistant" },
+                },
+                min: 3,
+                max: 11,
+              },
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const r = roomsData[context.dataIndex];
+                    return (
+                      r.name + ": קושי " + r.diff + ", טכנולוגיה " + r.tech
+                    );
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        renderRooms(roomsData);
+        initCharts();
+      });
+    </script>
+  </body>
+</html>
